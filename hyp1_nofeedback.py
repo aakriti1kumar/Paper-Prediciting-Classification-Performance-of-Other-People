@@ -1,8 +1,6 @@
 import numpy as np
 import pandas as pd
 import pickle
-import nest_asyncio
-nest_asyncio.apply()
 from scipy.special import expit
 from scipy.stats import norm
 from scipy import stats

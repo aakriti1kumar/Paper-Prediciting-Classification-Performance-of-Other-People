@@ -1,11 +1,8 @@
 import pickle
 import numpy as np
-import nest_asyncio
 import pandas as pd
 import stan
-import os
 from numpy import ndarray
-nest_asyncio.apply()
 from load_data import load_data
 import predict_score
 from scipy.stats import norm
@@ -92,10 +89,6 @@ for i in np.arange(0,64):
         sigma_d[i,j] = fit_model_other['sigma_d'].mean()
         Sim_OtherEst[i, j] = predict_score.predict_score(a_other[i, j], mu_d[i, j], sigma_d[i, j], sigma[i], v, K=13)
         print((i)*j)
-        fd = os.open(path, os.O_WRONLY)
-        os.close(fd)
-
-
 other_hyp1 = {'a_other': a_other, 'd_other':d_other, 'Sim_OtherEst': np.around(Sim_OtherEst)}
 
 with open("/Users/aakritikumar/Desktop/Lab/ToM-pycharm/hyp1_feedback.pkl", "wb") as tf:
