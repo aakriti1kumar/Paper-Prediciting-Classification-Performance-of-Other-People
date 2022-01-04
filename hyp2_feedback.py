@@ -1,20 +1,16 @@
 import pickle
 import numpy as np
-import nest_asyncio
 import pandas as pd
 import stan
-nest_asyncio.apply()
 from load_data import load_data
-import predict_score
 from scipy.stats import norm
 from scipy import stats
 from scipy.special import expit
+from open_file import open_file
+import predict_score
 
-with open("/Users/aakritikumar/Desktop/Lab/ToM-pycharm/true_params.pkl", "rb") as handle:
-    true = pickle.load(handle)
-
-with open("/Users/aakritikumar/Desktop/Lab/ToM-pycharm/self_params.pkl", "rb") as handle:
-    self = pickle.load(handle)
+true = open_file("true_params.pkl")
+self = open_file("self_params.pkl")
 
 df = pd.read_csv("Exp2_Estimation.csv")
 df_feedback = df[df.conditionshowFeedback == 1]
@@ -70,30 +66,28 @@ K = 13
 
 K = 13
 
-for i in np.arange(50,64):
-    a_other[i,0] = np.random.randn(1)
-    d_other[i,0] = np.random.randn(1)
+for i in np.arange(50, 64):
+    a_other[i, 0] = a_self[i] + np.random.randn(1)
     Pmf = np.zeros(K)
-    p = expit(a_other[i,0] - d_other[i,0])
-    Pmf[0] = norm.cdf((v[0] - p)/sigma[i])
-    Pmf[(K-1)] = 1 - norm.cdf((v[11] - p)/sigma[i])
-    for k in range(K-2):
-        Pmf[k+1] = norm.cdf((v[k+1] - p)/sigma[i]) - norm.cdf((v[k] - p)/sigma[i])
-    custm = stats.rv_discrete(name='custm', values=(np.linspace(0,12,13),Pmf))
-    Sim_OtherEst_hyp1[i,0] = custm.rvs(size=1)
-    for j in np.arange(1,J):
-        participant_data_other_hyp1 = {'n_items': j, 'K': 12+1, 'Y': data_other_true[i,:j] +1,
-                            'v': v, 'sigma': sigma[i]}
+    p = expit(a_other[i, 0] - d_other[i, 0])
+    Pmf[0] = norm.cdf((v[0] - p) / sigma[i])
+    Pmf[(K - 1)] = 1 - norm.cdf((v[11] - p) / sigma[i])
+    for k in range(K - 2):
+        Pmf[k + 1] = norm.cdf((v[k + 1] - p) / sigma[i]) - norm.cdf((v[k] - p) / sigma[i])
+    custm = stats.rv_discrete(name='custm', values=(np.linspace(0, 12, 13), Pmf))
+    Sim_OtherEst[i, 0] = custm.rvs(size=1)
+    for j in np.arange(1, J):
+        participant_data_other_hyp2 = {'n_items': j, 'K': 12 + 1, 'Y': data_other_true[i, :j] + 1,
+                                       'a_self': a_self[i], 'd_other': d_other[i, :(j + 1)],
+                                       'v': v, 'sigma': sigma[i]}
 
-        posterior_other_hyp1 = stan.build(model_hyp1, data=participant_data_other_hyp1)
-        fit_model_other = posterior_other_hyp1.sample(num_chains=2, num_samples=1000)
-        a_other[i,j] = fit_model_other['a_other'].mean()
-        d_other[i,j] = fit_model_other['d_other'].mean()
-        mu_d[i,j] = fit_model_other['mu_d'].mean()
-        sigma_d[i,j] = fit_model_other['sigma_d'].mean()
-        Sim_OtherEst_hyp1[i,j] = predict_score(a_other[i,j], mu_d[i,j], sigma_d[i,j], sigma[i], v, K=13)
-        print((i)*j)
+        posterior_hyp2 = stan.build(model_hyp2, data=participant_data_other_hyp2)
+        fit_model_other = posterior_hyp2.sample(num_chains=2, num_samples=1000)
+        a_other[i, j] = fit_model_other['a_other'].mean()
+        delta[i, j] = fit_model_other['delta'].mean()
+        Sim_OtherEst[i, j] = predict_score.predict_score_hyp2(a_other[i, j], d_other[i, j], sigma[i], v, K=13)
+        print(i,j)
 other_hyp2 = {'a_other': a_other, 'd_other': d_other, 'Sim_OtherEst': np.around(Sim_OtherEst)}
 
-with open("/Users/aakritikumar/Desktop/Lab/ToM-pycharm/hyp2_feedback.pkl", "wb") as tf:
+with open('/Users/aakritikumar/Desktop/Lab/ToM-pycharm/hyp2-feedback/hyp2_feedback-64.pkl', "wb") as tf:
     pickle.dump(other_hyp2, tf)

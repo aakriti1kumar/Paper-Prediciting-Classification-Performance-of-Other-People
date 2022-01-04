@@ -54,6 +54,7 @@ def load_data(dataframe) -> dict:
                                                            'data_other_true': data_other_true,
                                                            'data_self_est': data_self_est,
                                                            'data_self_true': data_self_true,
+                                                           'data_self_idset': data_self_idset,
                                                            'M': M,
                                                            'v': v,
                                                            'idx': idx}
