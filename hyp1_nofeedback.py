@@ -1,11 +1,10 @@
 import numpy as np
 import pandas as pd
 import pickle
-import nest_asyncio
-nest_asyncio.apply()
 from scipy.special import expit
 from scipy.stats import norm
 from scipy import stats
+from load_data import load_data
 
 with open("/Users/aakritikumar/Desktop/Lab/ToM-pycharm/true_params.pkl", "rb") as handle:
     true = pickle.load(handle)
@@ -39,6 +38,6 @@ for i in range(I):
         custm = stats.rv_discrete(name='custm', values=(np.linspace(0,12,13),Pmf))
         Sim_OtherEst[i, j] = custm.rvs(size=1)
 
-other_hyp1 =  {'a_other': a_other, 'Sim_OtherEst': Sim_OtherEst}
-with open("hyp1_nofeedback.pkl", "wb") as tf:
-    pickle.dump(other_hyp1_final, tf)
+hyp1 =  {'a_other': a_other, 'Sim_OtherEst': Sim_OtherEst}
+with open("/hyp1-nofeedback/hyp1_nofeedback.pkl", "wb") as tf:
+    pickle.dump(hyp1, tf)

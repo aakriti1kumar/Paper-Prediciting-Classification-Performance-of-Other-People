@@ -1,11 +1,8 @@
 import pickle
 import numpy as np
-import nest_asyncio
 import pandas as pd
 import stan
-import os
 from numpy import ndarray
-nest_asyncio.apply()
 from load_data import load_data
 import predict_score
 from scipy.stats import norm
@@ -69,7 +66,7 @@ sigma_d = np.zeros((I,J))
 K=13
 path = "/Users/aakritikumar/Desktop/Lab/ToM-pycharm/hyp1_feedback.pkl"
 
-for i in np.arange(0,64):
+for i in np.arange(50,64):
     a_other[i,0] = np.random.randn(1)
     d_other[i,0] = np.random.randn(1)
     Pmf = np.zeros(K)
@@ -90,13 +87,9 @@ for i in np.arange(0,64):
         d_other[i,j] = fit_model_other['d_other'].mean()
         mu_d[i,j] = fit_model_other['mu_d'].mean()
         sigma_d[i,j] = fit_model_other['sigma_d'].mean()
-        Sim_OtherEst[i, j] = predict_score.predict_score(a_other[i, j], mu_d[i, j], sigma_d[i, j], sigma[i], v, K=13)
-        print((i)*j)
-        fd = os.open(path, os.O_WRONLY)
-        os.close(fd)
-
-
+        Sim_OtherEst[i, j] = predict_score.predict_score_hyp1(a_other[i, j], mu_d[i, j], sigma_d[i, j], sigma[i], v, K=13)
+        print(i,j)
 other_hyp1 = {'a_other': a_other, 'd_other':d_other, 'Sim_OtherEst': np.around(Sim_OtherEst)}
 
-with open("/Users/aakritikumar/Desktop/Lab/ToM-pycharm/hyp1_feedback.pkl", "wb") as tf:
+with open("/Users/aakritikumar/Desktop/Lab/ToM-pycharm/hyp1_feedback-64.pkl", "wb") as tf:
     pickle.dump(other_hyp1, tf)

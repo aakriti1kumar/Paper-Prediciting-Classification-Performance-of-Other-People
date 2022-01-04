@@ -1,17 +1,14 @@
 import numpy as np
 import pandas as pd
 import pickle
-import nest_asyncio
-nest_asyncio.apply()
 from scipy.special import expit
 from scipy.stats import norm
 from scipy import stats
+from load_data import load_data
+from open_file import open_file
 
-with open("/Users/aakritikumar/Desktop/Lab/ToM-pycharm/true_params.pkl", "rb") as handle:
-    true = pickle.load(handle)
-
-with open("/Users/aakritikumar/Desktop/Lab/ToM-pycharm/self_params.pkl", "rb") as handle:
-    self = pickle.load(handle)
+true = open_file("true_params.pkl")
+self = open_file("self_params.pkl")
 
 df = pd.read_csv("Exp2_Estimation.csv")
 df_feedback = df[df.conditionshowFeedback == 0]
@@ -43,5 +40,5 @@ for i in range(64):
 
 other_hyp3 = {'Sim_OtherEst': Sim_OtherEst}
 
-with open("hyp3_nofeedback.pkl", "wb") as tf:
+with open("/Users/aakritikumar/Desktop/Lab/ToM-pycharm/hyp3-nofeedback/hyp3_nofeedback.pkl", "wb") as tf:
     pickle.dump(other_hyp3, tf)
