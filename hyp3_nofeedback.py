@@ -27,7 +27,6 @@ sigma = self['sigma_self'][idx]
 Sim_OtherEst = np.zeros((I, J))
 K = 13
 Pmf = np.zeros(K)
-Pmf = np.zeros(K)
 for i in range(64):
     for j in range(J):
         p = expit(a_other[i] - d_other[i,j])
@@ -36,7 +35,7 @@ for i in range(64):
         for k in range(K-2):
             Pmf[k+1] = norm.cdf((v[k+1] - p)/sigma[i]) - norm.cdf((v[k] - p)/sigma[i])
         custm = stats.rv_discrete(name='custm', values=(np.linspace(0,12,13),Pmf))
-        Sim_OtherEst[i,j] = custm.rvs(size=1)
+        Sim_OtherEst[i, j] = custm.rvs(size=1)
 
 other_hyp3 = {'Sim_OtherEst': Sim_OtherEst}
 

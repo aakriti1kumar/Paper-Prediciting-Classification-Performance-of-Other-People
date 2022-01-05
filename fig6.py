@@ -1,9 +1,7 @@
 import numpy as np
-import math
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
-from scipy import stats
 import pickle
 import matplotlib.patches as mpatches
 import set_style
@@ -28,20 +26,20 @@ hyp2_nf = open_file("hyp2-nofeedback/hyp2_nofeedback.pkl")
 hyp3_nf = open_file("hyp3-nofeedback/hyp3_nofeedback.pkl")
 
 hyp1_nc1_f = open_file("/Users/aakritikumar/Desktop/Lab/ToM-pycharm/combo1/hyp1-feedback/hyp1_feedback64.pkl")
-hyp2_nc1_f = open_file("combo1/hyp2-feedback/hyp2_feedback64.pkl")
-hyp3_nc1_f = open_file("combo1/hyp3-feedback/hyp3_feedback.pkl")
+hyp2_nc1_f = open_file("/Users/aakritikumar/Desktop/Lab/ToM-pycharm/combo1/hyp2-feedback/hyp2_feedback64.pkl")
+hyp3_nc1_f = open_file("/Users/aakritikumar/Desktop/Lab/ToM-pycharm/combo1/hyp3-feedback/hyp3_feedback.pkl")
 
 hyp1_nc1_nf = open_file("/Users/aakritikumar/Desktop/Lab/ToM-pycharm/combo1/hyp1-nofeedback/hyp1_nofeedback.pkl")
-hyp2_nc1_nf = open_file("combo1/hyp2-nofeedback/hyp2_nofeedback.pkl")
-hyp3_nc1_nf = open_file("combo1/hyp3-nofeedback/hyp3_nofeedback.pkl")
+hyp2_nc1_nf = open_file("/Users/aakritikumar/Desktop/Lab/ToM-pycharm/combo1/hyp2-nofeedback/hyp2_nofeedback.pkl")
+hyp3_nc1_nf = open_file("/Users/aakritikumar/Desktop/Lab/ToM-pycharm/combo1/hyp3-nofeedback/hyp3_nofeedback.pkl")
 
 hyp1_nc2_f = open_file("/Users/aakritikumar/Desktop/Lab/ToM-pycharm/combo2/hyp1-feedback/hyp1_feedback64.pkl")
-hyp2_nc2_f = open_file("combo2/hyp2-feedback/hyp2_feedback64.pkl")
-hyp3_nc2_f = open_file("combo2/hyp3-feedback/hyp3_feedback.pkl")
+hyp2_nc2_f = open_file("/Users/aakritikumar/Desktop/Lab/ToM-pycharm/combo2/hyp2-feedback/hyp2_feedback64.pkl")
+hyp3_nc2_f = open_file("/Users/aakritikumar/Desktop/Lab/ToM-pycharm/combo2/hyp3-feedback/hyp3_feedback.pkl")
 
 hyp1_nc2_nf = open_file("/Users/aakritikumar/Desktop/Lab/ToM-pycharm/combo2/hyp1-nofeedback/hyp1_nofeedback.pkl")
-hyp2_nc2_nf = open_file("combo2/hyp2-nofeedback/hyp2_nofeedback.pkl")
-hyp3_nc2_nf = open_file("combo2/hyp3-nofeedback/hyp3_nofeedback.pkl")
+hyp2_nc2_nf = open_file("/Users/aakritikumar/Desktop/Lab/ToM-pycharm/combo2/hyp2-nofeedback/hyp2_nofeedback.pkl")
+hyp3_nc2_nf = open_file("/Users/aakritikumar/Desktop/Lab/ToM-pycharm/combo2/hyp3-nofeedback/hyp3_nofeedback.pkl")
 
 
 #for mean true scores on plots
@@ -62,18 +60,13 @@ top = df[(df.otherworkerperf == 'Top')].uid.unique() - 1
 bottom = df[(df.otherworkerperf == 'Bottom')].uid.unique() - 1
 df = df.sort_values(['uid'], ascending=[True], kind="mergesort")
 df = df.drop_duplicates(subset=['uid'])
-labels_TB = df.otherworkerperf
+labels_TB = df.otherworkerperf.values
 
-zipped_lists1 = zip(combo_data.combo1_other_id, df.otherworkerperf)
-sorted_zipped_lists1 = sorted(zipped_lists1)
-labels_TB_c1 = [element for _, element in sorted_zipped_lists1]
-
-zipped_lists2 = zip(combo_data.combo2_other_id, df.otherworkerperf)
-sorted_zipped_lists2 = sorted(zipped_lists2)
-labels_TB_c2 = [element for _, element in sorted_zipped_lists2]
+labels_TB_c1 = [labels_TB[int(combo_data.combo1_other_id[i])] for i in range(len(combo_data.combo1_other_id))]
+labels_TB_c2 = [labels_TB[int(combo_data.combo2_other_id[i])] for i in range(len(combo_data.combo2_other_id))]
 
 
-def makedf_hyp1(df, df_nc1, df_nc2, labels_TB_c1, labels_TB_c2):
+def makedf_hyp1(df, df_nc1, df_nc2, labels_TB, labels_TB_c1, labels_TB_c2):
     df_simdata_hyp1 = pd.DataFrame()
     df_simdata_hyp1['User_ID'] = np.repeat(np.linspace(1, 64 * 3, 64 * 3), 16)
     # Add block numbers
@@ -104,7 +97,7 @@ def makedf_hyp1(df, df_nc1, df_nc2, labels_TB_c1, labels_TB_c2):
     return df_simdata_hyp1
 
 
-def makedf_hyp2(df, df_nc1, df_nc2, labels_TB_c1, labels_TB_c2):
+def makedf_hyp2(df, df_nc1, df_nc2, labels_TB, labels_TB_c1, labels_TB_c2):
     df_simdata_hyp1 = pd.DataFrame()
     df_simdata_hyp1['User_ID'] = np.repeat(np.linspace(1, 64 * 3, 64 * 3), 16)
     # Add block numbers
@@ -135,7 +128,7 @@ def makedf_hyp2(df, df_nc1, df_nc2, labels_TB_c1, labels_TB_c2):
     return df_simdata_hyp1
 
 
-def makedf_hyp3(df, df_nc1, df_nc2, labels_TB_c1, labels_TB_c2):
+def makedf_hyp3(df, df_nc1, df_nc2, labels_TB, labels_TB_c1, labels_TB_c2):
     df_simdata_hyp1 = pd.DataFrame()
     df_simdata_hyp1['User_ID'] = np.repeat(np.linspace(1, 64 * 3, 64 * 3), 16)
     # Add block numbers
@@ -166,13 +159,24 @@ def makedf_hyp3(df, df_nc1, df_nc2, labels_TB_c1, labels_TB_c2):
     return df_simdata_hyp1
 
 
-df_simdata_hyp1 = makedf_hyp1(hyp1_f, hyp1_nc1_f, hyp1_nc2_f, labels_TB_c1, labels_TB_c2)
-df_simdata_hyp2 = makedf_hyp2(hyp2_f, hyp2_nc1_f, hyp2_nc2_f, labels_TB_c1, labels_TB_c2)
-df_simdata_hyp3 = makedf_hyp2(hyp3_f, hyp3_nc1_f, hyp3_nc2_f, labels_TB_c1, labels_TB_c2)
+df_simdata_hyp1 = makedf_hyp1(hyp1_f, hyp1_nc1_f, hyp1_nc2_f, labels_TB, labels_TB_c1, labels_TB_c2)
+df_simdata_hyp2 = makedf_hyp2(hyp2_f, hyp2_nc1_f, hyp2_nc2_f, labels_TB, labels_TB_c1, labels_TB_c2)
+df_simdata_hyp3 = makedf_hyp3(hyp3_f, hyp3_nc1_f, hyp3_nc2_f, labels_TB, labels_TB_c1, labels_TB_c2)
 
-df_simdata_hyp1nf = makedf_hyp1(hyp1_nf, hyp1_nc1_nf, hyp1_nc2_nf, labels_TB_c1, labels_TB_c2)
-df_simdata_hyp2nf = makedf_hyp2(hyp2_nf, hyp2_nc1_nf, hyp2_nc2_nf, labels_TB_c1, labels_TB_c2)
-df_simdata_hyp3nf = makedf_hyp2(hyp3_nf, hyp3_nc1_nf, hyp3_nc2_nf, labels_TB_c1, labels_TB_c2)
+df = pd.read_csv("Exp2_Estimation.csv")
+df = df[df.conditionshowFeedback == 0]
+idx = df.uid.unique() - 1
+top = df[(df.otherworkerperf == 'Top')].uid.unique() - 1
+bottom = df[(df.otherworkerperf == 'Bottom')].uid.unique() - 1
+df = df.sort_values(['uid'], ascending=[True], kind="mergesort")
+df = df.drop_duplicates(subset=['uid'])
+labels_TB_nf = df.otherworkerperf.values
+
+labels_TB_c1 = [labels_TB_nf[int(combo_data.combo1_other_id[i])] for i in range(len(combo_data.combo1_other_id))]
+labels_TB_c2 = [labels_TB_nf[int(combo_data.combo2_other_id[i])] for i in range(len(combo_data.combo2_other_id))]
+df_simdata_hyp1nf = makedf_hyp1(hyp1_nf, hyp1_nc1_nf, hyp1_nc2_nf, labels_TB_nf, labels_TB_c1, labels_TB_c2)
+df_simdata_hyp2nf = makedf_hyp2(hyp2_nf, hyp2_nc1_nf, hyp2_nc2_nf, labels_TB_nf, labels_TB_c1, labels_TB_c2)
+df_simdata_hyp3nf = makedf_hyp3(hyp3_nf, hyp3_nc1_nf, hyp3_nc2_nf, labels_TB_nf, labels_TB_c1, labels_TB_c2)
 
 x = range(12)
 y = range(12)
@@ -212,9 +216,9 @@ sns.lineplot(data=df_simdata_hyp3nf, x="SelfScore", y="OtherScore",
 ax[0, 0].set_ylabel("Estimated Other Score", fontsize=14)
 ax[1, 0].set_ylabel("Estimated Other Score", fontsize=14)
 
-ax[0, 0].set_title(r"$M_1$: Fully Differentiated", fontsize=15)
-ax[0, 1].set_title(r"$M_2$: Differentiated by Ability", fontsize=15)
-ax[0, 2].set_title(r"$M_3$: Undifferentiated", fontsize=15)
+ax[0, 0].set_title(r"$M_1$: Fully Differentiated", fontsize=15, fontweight='bold')
+ax[0, 1].set_title(r"$M_2$: Differentiated by Ability", fontsize=15, fontweight='bold')
+ax[0, 2].set_title(r"$M_3$: Undifferentiated", fontsize=15, fontweight='bold')
 
 for i in range(2):
     for j in range(3):
@@ -277,9 +281,9 @@ sns.lineplot(data=df_simdata_hyp3nf[df_simdata_hyp3nf['TBlabel'] == 'Bottom'], x
 ax[0, 0].set_ylabel("Mean Other Score", fontsize=14)
 ax[1, 0].set_ylabel("Mean Other Score", fontsize=14)
 
-ax[0, 0].set_title(r"$M_1$: Fully Differentiated", fontsize=15)
-ax[0, 1].set_title(r"$M_2$: Differentiated by Ability", fontsize=15)
-ax[0, 2].set_title(r"$M_3$: Undifferentiated", fontsize=15)
+ax[0, 0].set_title(r"$M_1$: Fully Differentiated", fontsize=15, fontweight='bold')
+ax[0, 1].set_title(r"$M_2$: Differentiated by Ability", fontsize=15, fontweight='bold')
+ax[0, 2].set_title(r"$M_3$: Undifferentiated", fontsize=15, fontweight='bold')
 
 for i in range(2):
     for j in range(3):

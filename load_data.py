@@ -21,6 +21,7 @@ def load_data(dataframe) -> dict:
     df_self = df_self.sort_values(['uid'], ascending=[True], kind="mergesort")
     df_self = df_self[['uid', 'estCorrectSelf', 'idSet']]
     data_self_est = df_self.estCorrectSelf.values.reshape(I, J)
+    data_self_idset = df_self.idSet.values.reshape(I, J)
 
     # Estimated Other Performance
     df_other = dataframe[['uid', 'estCorrectOther', 'actCorrectOther', 'idSet']]
@@ -44,20 +45,20 @@ def load_data(dataframe) -> dict:
     M = 12
     v = (1 + np.arange(M)) / (M + 1)
     idx = dataframe.uid.unique() - 1
-    data_dict: Dict[str, Union[Union[int, float], Any]] = {'I': I,
-                                                           'J': J,
-                                                           'K': K,
-                                                           'df_true': df_true,
-                                                           'df_self': df_self,
-                                                           'df_other': df_other,
-                                                           'data_other_est': data_other_est,
-                                                           'data_other_true': data_other_true,
-                                                           'data_self_est': data_self_est,
-                                                           'data_self_true': data_self_true,
-                                                           'data_self_idset': data_self_idset,
-                                                           'M': M,
-                                                           'v': v,
-                                                           'idx': idx}
+    data_dict = {'I': I,
+                 'J': J,
+                 'K': K,
+                 'df_true': df_true,
+                 'df_self': df_self,
+                 'df_other': df_other,
+                 'data_other_est': data_other_est,
+                 'data_other_true': data_other_true,
+                 'data_self_est': data_self_est,
+                 'data_self_true': data_self_true,
+                 'data_self_idset': data_self_idset,
+                 'M': M,
+                 'v': v,
+                 'idx': idx}
     return data_dict
 
 
