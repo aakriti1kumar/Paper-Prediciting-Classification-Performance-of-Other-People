@@ -6,6 +6,7 @@ from scipy.stats import norm
 from scipy import stats
 from load_data import load_data
 from open_file import open_file
+import predict_score
 
 true = open_file("true_params.pkl")
 self = open_file("self_params.pkl")
@@ -24,21 +25,16 @@ a_self = self['a_self'][idx]
 d_other = self['d_self'][idx]
 sigma = self['sigma_self'][idx]
 Sim_OtherEst = np.zeros((I, J))
-delta = np.random.randn((I))
+delta = np.zeros((I))
 a_other = np.zeros((I))
 K = 13
-Pmf = np.zeros(K)
+# Pmf = np.zeros(K)
 for i in range(I):
-    delta[i] = np.random.randn(1)
+    delta[i] = np.random.uniform(-1,1,1)
     a_other[i] = a_self[i] + delta[i]
     for j in range(J):
-        p = expit(a_other[i] - d_other[i, j])
-        Pmf[0] = norm.cdf((v[0] - p) / sigma[i])
-        Pmf[(K - 1)] = 1 - norm.cdf((v[11] - p) / sigma[i])
-        for k in range(K - 2):
-            Pmf[k + 1] = norm.cdf((v[k + 1] - p) / sigma[i]) - norm.cdf((v[k] - p) / sigma[i])
-        custm = stats.rv_discrete(name='custm', values=(np.linspace(0, 12, 13), Pmf))
-        Sim_OtherEst[i, j] = custm.rvs(size=1)
+        Sim_OtherEst[i, j] = predict_score.predict_score_hyp2(a_other[i], d_other[i, j], sigma[i], v, K=13)
+
 
 other_hyp2 = {'a_other': a_other, 'delta': delta, 'Sim_OtherEst': Sim_OtherEst}
 

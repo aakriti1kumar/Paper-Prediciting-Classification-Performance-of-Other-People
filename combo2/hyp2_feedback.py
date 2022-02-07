@@ -3,19 +3,18 @@ import numpy as np
 import pandas as pd
 import stan
 from load_data import load_data
+import predict_score
 from scipy.stats import norm
 from scipy import stats
-from scipy.special import expit
-from open_file import open_file
-import predict_score
 import combo_data
+from scipy.special import expit
 import shuffle_data
 
-def run_hyp2(start, end):
-    true = open_file("/Users/aakritikumar/Desktop/Lab/ToM-pycharm/true_params.pkl")
-    self = open_file("/Users/aakritikumar/Desktop/Lab/ToM-pycharm/self_params.pkl")
-    df = pd.read_csv("/Users/aakritikumar/Desktop/Lab/ToM-pycharm/Exp2_Estimation.csv")
 
+def run_hyp2(start, end):
+    with open("/Users/aakritikumar/Desktop/Lab/ToM-pycharm/self_params.pkl", "rb") as handle:
+        self = pickle.load(handle)
+    df = pd.read_csv("/Users/aakritikumar/Desktop/Lab/ToM-pycharm/Exp2_Estimation.csv")
     df_feedback = df[df.conditionshowFeedback == 1]
     data = load_data(df_feedback)
     I = data['I']
@@ -34,7 +33,7 @@ def run_hyp2(start, end):
         int n_items;
         int<lower=0> K; //max score possible on each item
         int<lower=1,upper=K> Y[n_items];
-        real d_other[n_items+1];
+        real d_other[n_items];
         real a_self;
         vector[K-1] v;
         real<lower=0> sigma;
@@ -72,6 +71,8 @@ def run_hyp2(start, end):
     a_other = np.zeros((I, J))
     K = 13
 
+    K = 13
+
     for i in np.arange(start, end):
         a_other[i, 0] = a_self[i] + np.random.randn(1)
         Pmf = np.zeros(K)
@@ -84,7 +85,7 @@ def run_hyp2(start, end):
         Sim_OtherEst[i, 0] = custm.rvs(size=1)
         for j in np.arange(1, J):
             participant_data_other_hyp2 = {'n_items': j, 'K': 12 + 1, 'Y': data_other_true_shuffled_idset[i, :j] + 1,
-                                           'a_self': a_self[i], 'd_other': d_other[i, :(j + 1)],
+                                           'a_self': a_self[i], 'd_other': d_other[i, :j],
                                            'v': v, 'sigma': sigma[i]}
 
             posterior_hyp2 = stan.build(model_hyp2, data=participant_data_other_hyp2)
@@ -93,8 +94,9 @@ def run_hyp2(start, end):
             delta[i, j] = fit_model_other['delta'].mean()
             Sim_OtherEst[i, j] = predict_score.predict_score_hyp2(a_other[i, j], d_other[i, j], sigma[i], v, K=13)
             print(i,j)
-    other_hyp2 = {'a_other': a_other, 'd_other': d_other, 'Sim_OtherEst': np.around(Sim_OtherEst)}
+    other_hyp2 = {'a_other': a_other, 'd_other': d_other, 'Sim_OtherEst': Sim_OtherEst}
 
     with open(f"/Users/aakritikumar/Desktop/Lab/ToM-pycharm/combo2/hyp2-feedback/hyp2_feedback-{end}.pkl", "wb") as tf:
         pickle.dump(other_hyp2, tf)
     return None
+
