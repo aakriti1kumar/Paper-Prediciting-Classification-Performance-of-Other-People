@@ -1,5 +1,3 @@
-from typing import Dict, Any, Union
-
 import numpy as np
 import pandas as pd
 
@@ -35,13 +33,6 @@ def load_data(dataframe) -> dict:
     data_other_est = df_other.estCorrectOther.values.reshape(I, J)
     data_other_true = df_other.actCorrectOther.values.reshape(I, J)
 
-    # #Cut off points v
-    # M = 12
-    # v = np.zeros(M+2)
-    # v[0] = -np.inf
-    # v[1:13] = (1+np.arange(M))/(M+1)
-    # v[13] = np.inf
-
     M = 12
     v = (1 + np.arange(M)) / (M + 1)
     idx = dataframe.uid.unique() - 1
@@ -62,11 +53,11 @@ def load_data(dataframe) -> dict:
     return data_dict
 
 
-if __name__ == '__main__':
-    df = pd.read_csv("Exp2_Estimation.csv")
-    df_feedback = df[df.conditionshowFeedback == 1]
-    df_nofeedback = df[df.conditionshowFeedback == 0]
-
-    data_full = load_data(df)
-    data_feedback = load_data(df_feedback)
-    data_nofeedback = load_data(df_nofeedback)
+# if __name__ == '__main__':
+#     df = pd.read_csv("Exp2_Estimation.csv")
+#     df_feedback = df[df.conditionshowFeedback == 1]
+#     df_nofeedback = df[df.conditionshowFeedback == 0]
+#
+#     data_full = load_data(df)
+#     data_feedback = load_data(df_feedback)
+#     data_nofeedback = load_data(df_nofeedback)

@@ -25,8 +25,7 @@ def load_data(dataframe) -> dict:
 
     # Estimated Other Performance
     df_other = dataframe[['uid', 'estCorrectOther', 'actCorrectOther', 'idSet']]
-    df_other = df_other.sort_values(['uid'], ascending=[True], kind="mergesort")
-    df_other = df_other[['uid', 'estCorrectOther', 'actCorrectOther', 'idSet']]
+    df_other = df_other.sort_values(['uid', 'idSet'], ascending=[True, True], kind="mergesort")
     df_other.estCorrectOther = np.nan_to_num(df_other.estCorrectOther, copy=True, nan=4, posinf=None, neginf=None)
     df_other.estCorrectOther = df_other.estCorrectOther.astype(int)
     df_other.actCorrectOther = np.nan_to_num(df_other.actCorrectOther, copy=True, nan=4, posinf=None, neginf=None)
@@ -54,7 +53,6 @@ def load_data(dataframe) -> dict:
                                                            'data_other_est': data_other_est,
                                                            'data_other_true': data_other_true,
                                                            'data_self_est': data_self_est,
-                                                           'data_self_true': data_self_true,
                                                            'data_self_idset': data_self_idset,
                                                            'M': M,
                                                            'v': v,

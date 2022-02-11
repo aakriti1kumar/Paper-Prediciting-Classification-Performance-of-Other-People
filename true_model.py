@@ -25,8 +25,8 @@ model_true = """data {
     a ~ normal(0,1);
     d ~ normal(mu_d,sigma_d);
     mu_d ~ normal(0,2);
-    sigma_d ~ cauchy(0,4);
-    sigma ~ cauchy(0,4);
+    sigma_d ~ cauchy(0,2);
+    sigma ~ cauchy(0,2);
     for(i in 1:n_participants){
       for (j in 1:n_items){
         real p;
@@ -37,25 +37,9 @@ model_true = """data {
         for (k in 2:(K-1)){ 
             Pmf[k] = Phi((v[k] - p)/sigma) - Phi((v[k-1] - p)/sigma);}
         Y[i,j] ~ categorical(Pmf);
-    } 
+     } 
     }   
-  } 
-  generated quantities{
-      int<lower=1,upper=K> Sim_Y[n_participants,n_items];
-      for(i in 1:n_participants){
-        for (j in 1:n_items){
-          real p;
-          vector[K] Pmf;
-          p = inv_logit(a[i] - d[j]);
-          Pmf[1] = Phi((v[1] - p)/sigma);
-          Pmf[K] = 1 - Phi((v[K-1] - p)/sigma);
-          for (k in 2:(K-1)){ 
-            Pmf[k] = Phi((v[k] - p)/sigma) - Phi((v[k-1] - p)/sigma);}
-
-          Sim_Y[i,j] = categorical_rng(Pmf);} 
-      }   
-  }
-
+  }  
 """
 
 df = pd.read_csv("Exp2_Estimation.csv")
@@ -74,8 +58,7 @@ d_true = fit_model_true['d'].mean(axis=1)
 sigma = fit_model_true['sigma'].mean(axis=1)
 mu_d = fit_model_true['mu_d'].mean(axis=1)
 sigma_d = fit_model_true['sigma_d'].mean(axis=1)
-Sim_Y = fit_model_true['Sim_Y'].mean(axis=2)
 
-true_params = dict(a_true=a_true, d_true=d_true, mu_d=mu_d, sigma_d=sigma_d, sigma=sigma, Sim_Y=Sim_Y - 1)
-with open("/true_params.pkl", "wb") as tf:
+true_params = dict(a_true=a_true, d_true=d_true, mu_d=mu_d, sigma_d=sigma_d, sigma=sigma)
+with open("/Users/aakritikumar/Desktop/Lab/ToM-pycharm/true_params.pkl", "wb") as tf:
     pickle.dump(true_params, tf)
